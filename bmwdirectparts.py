@@ -14,7 +14,7 @@ if __name__ == "__main__":
         name_selector=".product-title",
         price_selector=".sale-pricing",
         wait_selector=".product-title",
-        custom_url="try",
+        custom_url="/oem-parts/",
         headless=False,
         use_uc=True,
     )
