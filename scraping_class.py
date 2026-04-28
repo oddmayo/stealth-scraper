@@ -6,9 +6,9 @@ from urllib.parse import urljoin
 
 @dataclass
 class SiteConfig:
-    search_url_template: str
     name_selector: str
     price_selector: str
+    search_url_template: str = ""
     wait_selector: str = ""
     custom_url: str | None = "try"
     headless: bool = False
@@ -112,12 +112,12 @@ class SiteScraper:
             self.config.custom_url,
         )
 
-    def extract_part_info(self, part_number):
+    def extract_part_info(self, part_number, search_url=None):
         print(f"Starting extraction for {part_number}...", flush=True)
         html = ""
         final_url = ""
         product_url = ""
-        search_url = self.config.search_url_template.format(part_number=part_number)
+        search_url = search_url or self.config.search_url_template.format(part_number=part_number)
 
         try:
             with SB(uc=self.config.use_uc, headless=self.config.headless) as sb:
