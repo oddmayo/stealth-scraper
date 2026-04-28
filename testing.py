@@ -205,7 +205,7 @@ if __name__ == "__main__":
         name_selector=".product-title",
         price_selector=".sale-pricing",
         wait_selector=".product-title",
-        custom_url=None,
+        custom_url="try",
         headless=False,
         use_uc=True,
     )
