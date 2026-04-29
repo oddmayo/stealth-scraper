@@ -5,6 +5,14 @@ from urllib.parse import urljoin
 import time
 
 
+def format_seconds(seconds: float) -> str:
+    """Convert seconds to HH:MM:SS format."""
+    hours = int(seconds // 3600)
+    minutes = int((seconds % 3600) // 60)
+    secs = seconds % 60
+    return f"{hours:02d}:{minutes:02d}:{secs:06.3f}"
+
+
 @dataclass
 class SiteConfig:
     name_selector: str
@@ -162,7 +170,7 @@ class SiteScraper:
         if not html:
             print("Failed to retrieve HTML.", flush=True)
             elapsed = time.perf_counter() - start_time
-            print(f"Extraction time for {part_number}: {elapsed:.3f} seconds", flush=True)
+            print(f"Extraction time for {part_number}: {format_seconds(elapsed)}", flush=True)
             return {
                 "part_number": part_number,
                 "name": None,
@@ -191,7 +199,7 @@ class SiteScraper:
             print(f"List Price: {list_price}", flush=True)
         print(f"URL:   {final_url}", flush=True)
         elapsed = time.perf_counter() - start_time
-        print(f"Extraction time for {part_number}: {elapsed:.3f} seconds", flush=True)
+        print(f"Extraction time for {part_number}: {format_seconds(elapsed)}", flush=True)
 
         result = {
             "part_number": part_number,
@@ -218,6 +226,6 @@ class SiteScraper:
             if return_results:
                 results[part_number] = res
         total_elapsed = time.perf_counter() - total_start
-        print(f"Total scraping time for {len(part_numbers)} parts: {total_elapsed:.3f} seconds", flush=True)
+        print(f"Total scraping time for {len(part_numbers)} parts: {format_seconds(total_elapsed)}", flush=True)
         if return_results:
             return results

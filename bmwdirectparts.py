@@ -1,4 +1,4 @@
-from scraping_class import SiteConfig, SiteScraper
+from scraping_class import SiteConfig, SiteScraper, format_seconds
 import io
 import csv
 import time
@@ -42,4 +42,4 @@ if __name__ == "__main__":
         search_url = row["url"]
         results[part_number] = scraper.extract_part_info(part_number, search_url=search_url)
     total_elapsed = time.perf_counter() - total_start
-    print(f"Total execution time for {len(df)} parts: {total_elapsed:.3f} seconds", flush=True)
+    print(f"Total execution time for {len(df)} parts: {format_seconds(total_elapsed)}", flush=True)
