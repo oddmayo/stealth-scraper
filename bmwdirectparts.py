@@ -15,9 +15,6 @@ CHILE,BMW,B36116883758,36116883758,https://www.bmwdirectparts.com/search?search_
 CHILE,BMW,B36122232323,36122232323,https://www.bmwdirectparts.com/search?search_str=36122232323,1,AC
 CHILE,BMW,B41515A38652,41515A38652,https://www.bmwdirectparts.com/search?search_str=41515A38652,1,AC
 CHILE,BMW,B51317440770,51317440770,https://www.bmwdirectparts.com/search?search_str=51317440770,1,AC
-CHILE,BMW,B61627407273,61627407273,https://www.bmwdirectparts.com/search?search_str=61627407273,1,BA
-CHILE,BMW,B12125A1A259,12125A1A259,https://www.bmwdirectparts.com/search?search_str=12125A1A259,1,BB
-CHILE,BMW,B51747421678,51747421678,https://www.bmwdirectparts.com/search?search_str=51747421678,1,BB
 """
 
 # Read into rows without pandas so the runner does not depend on binary packages
@@ -28,11 +25,12 @@ if __name__ == "__main__":
     site = SiteConfig(
         search_url_template="",
         name_selector=".product-title",
-        price_selector=".sale-pricing",
+        sale_price_selector=".sale-pricing",
         wait_selector=".product-title",
         custom_url="/oem-parts/",
         headless=False,
         use_uc=True,
+        list_price_selector=".list-price-value",
     )
 
     scraper = SiteScraper(site)

@@ -8,12 +8,13 @@ import time
 @dataclass
 class SiteConfig:
     name_selector: str
-    price_selector: str
+    sale_price_selector: str
     search_url_template: str = ""
     wait_selector: str = ""
     custom_url: str | None = "try"
     headless: bool = False
     use_uc: bool = True
+    list_price_selector: str | None = None
 
 
 class SiteScraper:
@@ -175,22 +176,32 @@ class SiteScraper:
         name_tag = soup.select_one(self.config.name_selector)
         part_name = name_tag.get_text(strip=True) if name_tag else "Name not found"
 
-        price_tag = soup.select_one(self.config.price_selector)
-        price = price_tag.get_text(strip=True) if price_tag else "Price not found"
+        sale_price_tag = soup.select_one(self.config.sale_price_selector)
+        sale_price = sale_price_tag.get_text(strip=True) if sale_price_tag else "Price not found"
+
+        list_price = None
+        if self.config.list_price_selector:
+            list_price_tag = soup.select_one(self.config.list_price_selector)
+            list_price = list_price_tag.get_text(strip=True) if list_price_tag else "Price not found"
 
         print("\n--- Extraction Results ---", flush=True)
         print(f"Name:  {part_name}", flush=True)
-        print(f"Price: {price}", flush=True)
+        print(f"Sale Price: {sale_price}", flush=True)
+        if list_price:
+            print(f"List Price: {list_price}", flush=True)
         print(f"URL:   {final_url}", flush=True)
         elapsed = time.perf_counter() - start_time
         print(f"Extraction time for {part_number}: {elapsed:.3f} seconds", flush=True)
 
-        return {
+        result = {
             "part_number": part_number,
             "name": part_name,
-            "price": price,
+            "sale_price": sale_price,
             "url": final_url,
         }
+        if list_price:
+            result["list_price"] = list_price
+        return result
 
     def scrape_many(self, part_numbers, return_results: bool = False):
         """Scrape multiple part numbers.
