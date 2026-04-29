@@ -1,16 +1,9 @@
+from scraping_functions import clean_name_text, clean_price_text, format_seconds
 from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from seleniumbase import SB
 from urllib.parse import urljoin
 import time
-
-
-def format_seconds(seconds: float) -> str:
-    """Convert seconds to HH:MM:SS format."""
-    hours = int(seconds // 3600)
-    minutes = int((seconds % 3600) // 60)
-    secs = seconds % 60
-    return f"{hours:02d}:{minutes:02d}:{secs:06.3f}"
 
 
 @dataclass
@@ -182,15 +175,18 @@ class SiteScraper:
         soup = BeautifulSoup(html, "html.parser")
 
         name_tag = soup.select_one(self.config.name_selector)
-        part_name = name_tag.get_text(strip=True) if name_tag else "Name not found"
+        raw_part_name = name_tag.get_text(strip=True) if name_tag else "Name not found"
+        part_name = clean_name_text(raw_part_name)
 
         sale_price_tag = soup.select_one(self.config.sale_price_selector)
-        sale_price = sale_price_tag.get_text(strip=True) if sale_price_tag else "Price not found"
+        raw_sale_price = sale_price_tag.get_text(strip=True) if sale_price_tag else "Price not found"
+        sale_price = clean_price_text(raw_sale_price)
 
         list_price = None
         if self.config.list_price_selector:
             list_price_tag = soup.select_one(self.config.list_price_selector)
-            list_price = list_price_tag.get_text(strip=True) if list_price_tag else "Price not found"
+            raw_list_price = list_price_tag.get_text(strip=True) if list_price_tag else "Price not found"
+            list_price = clean_price_text(raw_list_price)
 
         print("\n--- Extraction Results ---", flush=True)
         print(f"Name:  {part_name}", flush=True)
