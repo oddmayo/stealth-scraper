@@ -2,6 +2,7 @@ from dataclasses import dataclass
 from bs4 import BeautifulSoup
 from seleniumbase import SB
 from urllib.parse import urljoin
+import time
 
 
 @dataclass
@@ -114,6 +115,7 @@ class SiteScraper:
 
     def extract_part_info(self, part_number, search_url=None):
         print(f"Starting extraction for {part_number}...", flush=True)
+        start_time = time.perf_counter()
         html = ""
         final_url = ""
         product_url = ""
@@ -130,7 +132,7 @@ class SiteScraper:
 
                 if self.config.wait_selector:
                     try:
-                        sb.wait_for_element(self.config.wait_selector, timeout=15)
+                        sb.wait_for_element(self.config.wait_selector, timeout=10)
                     except Exception:
                         print(
                             f"Timed out waiting for {self.config.wait_selector}.",
@@ -158,6 +160,8 @@ class SiteScraper:
 
         if not html:
             print("Failed to retrieve HTML.", flush=True)
+            elapsed = time.perf_counter() - start_time
+            print(f"Extraction time for {part_number}: {elapsed:.3f} seconds", flush=True)
             return {
                 "part_number": part_number,
                 "name": None,
@@ -178,6 +182,8 @@ class SiteScraper:
         print(f"Name:  {part_name}", flush=True)
         print(f"Price: {price}", flush=True)
         print(f"URL:   {final_url}", flush=True)
+        elapsed = time.perf_counter() - start_time
+        print(f"Extraction time for {part_number}: {elapsed:.3f} seconds", flush=True)
 
         return {
             "part_number": part_number,
@@ -186,8 +192,21 @@ class SiteScraper:
             "url": final_url,
         }
 
-    def scrape_many(self, part_numbers):
-        results = {}
+    def scrape_many(self, part_numbers, return_results: bool = False):
+        """Scrape multiple part numbers.
+
+        By default this prints per-part progress and the total elapsed time
+        but does not return the full results dictionary (avoids caller printing it).
+
+        Set `return_results=True` to receive the results dict.
+        """
+        results = {} if return_results else None
+        total_start = time.perf_counter()
         for part_number in part_numbers:
-            results[part_number] = self.extract_part_info(part_number)
-        return results
+            res = self.extract_part_info(part_number)
+            if return_results:
+                results[part_number] = res
+        total_elapsed = time.perf_counter() - total_start
+        print(f"Total scraping time for {len(part_numbers)} parts: {total_elapsed:.3f} seconds", flush=True)
+        if return_results:
+            return results
